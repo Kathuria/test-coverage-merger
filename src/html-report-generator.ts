@@ -1,37 +1,47 @@
 /**
  * Html Report generator
- * @param lcovData 
- * @param coverageReports 
- * @returns 
+ * @param lcovData
+ * @param coverageReports
+ * @returns
  */
 export const htmlReportGenerator = (lcovData: any, coverageReports: any) => {
-        let linesFound : number = 0, linesHit : number = 0, 
-                branchesFound: number = 0, branchesHit: number = 0,
-                functionsFound: number = 0, functionsHit: number = 0,
-                statementsFound: number = 0, statementsHit: number = 0;
+  let linesFound: number = 0,
+    linesHit: number = 0,
+    branchesFound: number = 0,
+    branchesHit: number = 0,
+    functionsFound: number = 0,
+    functionsHit: number = 0,
+    statementsFound: number = 0,
+    statementsHit: number = 0;
 
-        if(!lcovData || !coverageReports) {
-                return; 
-        }
-        else {
-                lcovData.map((record: any) : void => {
-        
-                        linesFound += record.lines.found || 0;
-                        linesHit += record.lines.hit || 0;
-                        branchesFound += record.branches.found || 0;
-                        branchesHit += record.branches.hit || 0;
-                        functionsFound += record.functions.found || 0;
-                        functionsHit += record.functions.hit || 0;
-                        statementsFound += record.statements.found || 0;
-                        statementsHit += record.statements.hit || 0;
-                });
-                
-                const linesPercentage = linesFound ? `${(linesHit / linesFound * 100). toFixed(2)}%` : '0%';
-                const branchesPercentage = branchesFound? `${(branchesHit / branchesFound * 100). toFixed(2)}%` : '0%';
-                const functionsPercentage = functionsFound ? `${(functionsHit / functionsFound * 100).toFixed(2)}%` : '0%';
-                const statementsPercentage = statementsFound ? `${(statementsHit / statementsFound * 100). toFixed (2)}%` : '0%';
-                
-                console. log(`
+  if (!lcovData || !coverageReports) {
+    return;
+  } else {
+    lcovData.map((record: any): void => {
+      linesFound += record.lines.found || 0;
+      linesHit += record.lines.hit || 0;
+      branchesFound += record.branches.found || 0;
+      branchesHit += record.branches.hit || 0;
+      functionsFound += record.functions.found || 0;
+      functionsHit += record.functions.hit || 0;
+      statementsFound += record.statements.found || 0;
+      statementsHit += record.statements.hit || 0;
+    });
+
+    const linesPercentage = linesFound
+      ? `${((linesHit / linesFound) * 100).toFixed(2)}%`
+      : '0%';
+    const branchesPercentage = branchesFound
+      ? `${((branchesHit / branchesFound) * 100).toFixed(2)}%`
+      : '0%';
+    const functionsPercentage = functionsFound
+      ? `${((functionsHit / functionsFound) * 100).toFixed(2)}%`
+      : '0%';
+    const statementsPercentage = statementsFound
+      ? `${((statementsHit / statementsFound) * 100).toFixed(2)}%`
+      : '0%';
+
+    console.log(`
                 ================================= Coverage summary ========================
                 Merged Coverage : ${linesPercentage} (${linesHit} / ${linesFound})}
                 ===========================================================================
@@ -41,9 +51,8 @@ export const htmlReportGenerator = (lcovData: any, coverageReports: any) => {
                 
                 ===========================================================================
                 `);
-                
-                
-                return `
+
+    return `
                 <!doctype html>
                 <html Lang="en">
                         <head>
@@ -97,18 +106,21 @@ export const htmlReportGenerator = (lcovData: any, coverageReports: any) => {
                                                 <th>Covered</th>
                                                 <th>Percentage</th>
                                         </tr>
-                                        ${lcovData.map((record: any) => `
+                                        ${lcovData
+                                          .map(
+                                            (record: any) => `
                                         <tr>
                                                 <td>${record.file}</td>
                                                 <td>${record.lines.found}</td> 
                                                 <td>${record.lines.hit}</td>
-                                                <td>${record.lines.hit ? (record.lines.hit / record.lines.found * 100).toFixed(2) : 0} %</td> 
+                                                <td>${record.lines.hit ? ((record.lines.hit / record.lines.found) * 100).toFixed(2) : 0} %</td> 
                                         </tr>
-                                        `).join('')}
+                                        `
+                                          )
+                                          .join('')}
                                 </table>
                                 </div>
                         </body>
                 </html>`;
-        }
-        
-}
+  }
+};

@@ -15,7 +15,9 @@ describe('Integration Test for testCoverageMerger', () => {
   const rootPath = 'test-reports';
   const mergedLcovFileName = 'merged-report';
   const outputHtmlFileName = 'final-report';
-  const coverageReports = ['report1.lcov', 'report2.lcov'].map(file => path.join(rootPath, file));
+  const coverageReports = ['report1.lcov', 'report2.lcov'].map((file) =>
+    path.join(rootPath, file)
+  );
 
   beforeAll(async () => {
     // Create test directory
@@ -40,7 +42,12 @@ describe('Integration Test for testCoverageMerger', () => {
   });
 
   it('should merge LCOV reports, parse them, and generate an HTML report', async () => {
-    await testCoverageMerger({ rootPath, mergedLcovFileName, outputHtmlFileName, coverageReports });
+    await testCoverageMerger({
+      rootPath,
+      mergedLcovFileName,
+      outputHtmlFileName,
+      coverageReports,
+    });
 
     // Verify merged LCOV file
     const mergedLcovPath = path.join(rootPath, `${mergedLcovFileName}.lcov`);
@@ -56,6 +63,8 @@ describe('Integration Test for testCoverageMerger', () => {
 
     expect(document.querySelector('html')).not.toBeNull();
     expect(document.querySelector('body')).not.toBeNull();
-    expect(document.querySelector('h1')?.textContent).toContain('Test Coverage Report');
+    expect(document.querySelector('h1')?.textContent).toContain(
+      'Test Coverage Report'
+    );
   });
 });

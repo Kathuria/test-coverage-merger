@@ -26,14 +26,24 @@ describe('testCoverageMerger', () => {
     const outputHtmlFileName = 'final-report';
 
     const lcovData = 'TN:\nSF:file1.ts\nDA:1,1\nend_of_record';
-    const parsedData = [{ file: 'file1.ts', lines: { found: 1, hit: 1 }, branches: { found: 0, hit: 0 }, functions: { found: 0, hit: 0 }, statements: { found: 1, hit: 1 } }];
+    const parsedData = [
+      {
+        file: 'file1.ts',
+        lines: { found: 1, hit: 1 },
+        branches: { found: 0, hit: 0 },
+        functions: { found: 0, hit: 0 },
+        statements: { found: 1, hit: 1 },
+      },
+    ];
     const htmlReport = '<html><body>Test Coverage Report</body></html>';
 
     // Mock the behavior of dependencies
-    (mergeLcovReports as jest.Mock).mockImplementation((reports, outputPath) => {
-      expect(reports).toEqual(coverageReports);
-      expect(outputPath).toBe(`${rootPath}/${mergedLcovFileName}.lcov`);
-    });
+    (mergeLcovReports as jest.Mock).mockImplementation(
+      (reports, outputPath) => {
+        expect(reports).toEqual(coverageReports);
+        expect(outputPath).toBe(`${rootPath}/${mergedLcovFileName}.lcov`);
+      }
+    );
 
     readFileSync.mockReturnValue(lcovData);
 
@@ -47,13 +57,24 @@ describe('testCoverageMerger', () => {
     writeFileSync.mockResolvedValue(undefined);
 
     // Call the function to test
-    await testCoverageMerger({ rootPath, mergedLcovFileName, outputHtmlFileName, coverageReports });
+    await testCoverageMerger({
+      rootPath,
+      mergedLcovFileName,
+      outputHtmlFileName,
+      coverageReports,
+    });
 
     // Verify the interactions
     expect(mergeLcovReports).toHaveBeenCalled();
-    expect(readFileSync).toHaveBeenCalledWith(`${rootPath}/${mergedLcovFileName}.lcov`, 'utf8');
+    expect(readFileSync).toHaveBeenCalledWith(
+      `${rootPath}/${mergedLcovFileName}.lcov`,
+      'utf8'
+    );
     expect(lcovFileParser).toHaveBeenCalled();
-    expect(htmlReportGenerator).toHaveBeenCalledWith(parsedData, coverageReports);
+    expect(htmlReportGenerator).toHaveBeenCalledWith(
+      parsedData,
+      coverageReports
+    );
   });
 
   it('should handle errors during LCOV parsing', async () => {
@@ -64,10 +85,12 @@ describe('testCoverageMerger', () => {
 
     const lcovData = 'TN:\nSF:file1.ts\nDA:1,1\nend_of_record';
 
-    (mergeLcovReports as jest.Mock).mockImplementation((reports, outputPath) => {
-      expect(reports).toEqual(coverageReports);
-      expect(outputPath).toBe(`${rootPath}/${mergedLcovFileName}.lcov`);
-    });
+    (mergeLcovReports as jest.Mock).mockImplementation(
+      (reports, outputPath) => {
+        expect(reports).toEqual(coverageReports);
+        expect(outputPath).toBe(`${rootPath}/${mergedLcovFileName}.lcov`);
+      }
+    );
 
     readFileSync.mockReturnValue(lcovData);
 
@@ -77,9 +100,101 @@ describe('testCoverageMerger', () => {
 
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
 
-    await testCoverageMerger({ rootPath, mergedLcovFileName, outputHtmlFileName, coverageReports });
+    await testCoverageMerger({
+      rootPath,
+      mergedLcovFileName,
+      outputHtmlFileName,
+      coverageReports,
+    });
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith('Error Parsing LCOV file:', expect.any(Error));
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Error Parsing LCOV file:',
+      expect.any(Error)
+    );
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('should handle without any provided arguments', async () => {
+    const coverageReports = ['report1.lcov'];
+    const lcovData = 'TN:\nSF:file1.ts\nDA:1,1\nend_of_record';
+
+    (mergeLcovReports as jest.Mock).mockImplementation(
+      (reports, outputPath) => {
+        expect(reports).toEqual(coverageReports);
+        expect(outputPath).toBe('test-reports/merged-report.lcov');
+      }
+    );
+
+    readFileSync.mockReturnValue(lcovData);
+
+    (lcovFileParser as jest.Mock).mockImplementation((data, callback) => {
+      callback(new Error('Parsing error'), null);
+    });
+
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+
+    await testCoverageMerger({ coverageReports });
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Error Parsing LCOV file:',
+      expect.any(Error)
+    );
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('should handle errors during HTML report writing', async () => {
+    const coverageReports = ['report1.lcov'];
+    const rootPath = 'test-reports';
+    const mergedLcovFileName = 'merged-report';
+    const outputHtmlFileName = 'final-report';
+
+    const lcovData = 'TN:\nSF:file1.ts\nDA:1,1\nend_of_record';
+    const parsedData = [
+      {
+        file: 'file1.ts',
+        lines: { found: 1, hit: 1 },
+        branches: { found: 0, hit: 0 },
+        functions: { found: 0, hit: 0 },
+        statements: { found: 1, hit: 1 },
+      },
+    ];
+    const htmlReport = '<html><body>Test Coverage Report</body></html>';
+
+    // Mock the behavior of dependencies
+    (mergeLcovReports as jest.Mock).mockImplementation(
+      (reports, outputPath) => {
+        expect(reports).toEqual(coverageReports);
+        expect(outputPath).toBe(`${rootPath}/${mergedLcovFileName}.lcov`);
+      }
+    );
+
+    readFileSync.mockReturnValue(lcovData);
+
+    (lcovFileParser as jest.Mock).mockImplementation((data, callback) => {
+      callback(null, parsedData);
+    });
+
+    (htmlReportGenerator as jest.Mock).mockReturnValue(htmlReport);
+
+    // Simulate an error during HTML report writing
+    writeFileSync.mockImplementation(() => {
+      throw new Error('Write error');
+    });
+
+    const consoleErrorSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
+    await testCoverageMerger({
+      rootPath,
+      mergedLcovFileName,
+      outputHtmlFileName,
+      coverageReports,
+    });
+
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(0);
 
     consoleErrorSpy.mockRestore();
   });

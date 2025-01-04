@@ -1,3 +1,3 @@
 module.exports = {
-        branches: ["main", { name: "beta", prerelease: true }],
+  branches: ['main', { name: 'beta', prerelease: true }],
 };

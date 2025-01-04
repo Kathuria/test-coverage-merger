@@ -4,8 +4,9 @@
   "description": "A package providing capability to merge test coverage reports.",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --config jest.config.js --coverage --silent",
     "build": "tsc",
+    "format": "prettier --config .prettierrc --write 'src/**/*.{ts,tsx}'",
     "semantic-release": "semantic-release"
   },
   "repository": {
@@ -31,6 +32,7 @@
     "@types/node": "^22.10.3",
     "jest": "^29.7.0",
     "jsdom": "^25.0.1",
+    "prettier": "^3.4.2",
     "semantic-release": "^24.2.0",
     "ts-jest": "^29.2.5",
     "typescript": "^5.7.2"

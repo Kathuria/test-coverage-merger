@@ -13,7 +13,6 @@ const outputPath: string = '/merged.lcov';
 // Call the function to merge the LCOV reports
 mergeLcovReports(reports, outputPath);
 
-
 // Mock the file system methods
 jest.mock('fs');
 
@@ -44,7 +43,10 @@ describe('mergeLcovReports', () => {
 
     // Check that fs.writeFileSync was called with the correct arguments
     const expectedMergedContent = `${report1Content}\n${report2Content}`;
-    expect(fs.writeFileSync).toHaveBeenCalledWith(outputPath, expectedMergedContent);
+    expect(fs.writeFileSync).toHaveBeenCalledWith(
+      outputPath,
+      expectedMergedContent
+    );
   });
 
   it('should handle an empty reports array gracefully', () => {
